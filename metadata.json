@@ -1,0 +1,6 @@
+{
+  "name": "Interaktív CPU Szimulátor & Commodore 64 Stúdió",
+  "description": "Moduláris oktatási 8-bites CPU szimulátor (Edu8, 6502, Z80, SAP-1), Hex Editor, C64 Stúdió, 74HC595 Shift-Regiszter, ATmega328P EEPROM Stúdió, avr8js 16 MHz Hardver Emulátor, Dinamikus Témakezelő (Alapértelmezett Sötét, Rendszerkövető, Világos, Hacker Pro Matrix), Verem Dinamikus Vizualizáció, C ⟷ AVR Assembly Szinkron Szerkesztő, és Hardveres Megszakítások (IVT) Stúdió.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

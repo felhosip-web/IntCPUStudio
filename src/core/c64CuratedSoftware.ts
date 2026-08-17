@@ -1,0 +1,357 @@
+import { C64DiskImage, C64DiskFile } from '../types/c64Floppy';
+import { generatePrgFromBasic } from './c64PrgParser';
+
+// ==========================================
+// 1. SPACE INVADERS 64 BASIC ARCADE GAME
+// ==========================================
+const SPACE_INVADERS_BASIC = `10 REM *** SPACE INVADERS 64 (C64 ARCADE) ***
+20 POKE 53280,0: POKE 53281,0: POKE 646,14: PRINT CHR$(147)
+30 PRINT "========================================"
+40 PRINT "    *** SPACE INVADERS 64 ***"
+50 PRINT "========================================"
+60 PRINT "IRANYITAS: A = BALRA, D = JOBBRA, SPACE = LOVES"
+70 PRINT "Q = KILEPES. NYOMJ EGY GOMBOT AZ INDITASHOZ!"
+80 GET K$: IF K$="" THEN 80
+90 PRINT CHR$(147): SC=0: LV=3: PX=20: BX=-1: BY=-1: AL=1: AD=1
+100 DIM AX(8), AY(8), AS(8)
+110 FOR I=1 TO 8: AX(I)=I*4: AY(I)=3: AS(I)=1: NEXT I
+120 REM --- MAIN GAME LOOP ---
+130 POKE 53280,0
+140 REM ERASE PLAYER & BULLET
+150 POKE 1024+22*40+PX, 32: IF BY>0 AND BX>=0 THEN POKE 1024+BY*40+BX, 32
+160 REM READ KEYBOARD INPUT
+170 GET K$
+180 IF K$="A" AND PX>1 THEN PX=PX-1
+190 IF K$="D" AND PX<38 THEN PX=PX+1
+200 IF K$=" " AND BY<0 THEN BX=PX: BY=21: SOUND 1, 600, 2
+210 IF K$="Q" THEN GOTO 500
+220 REM MOVE BULLET
+230 IF BY>0 THEN BY=BY-1: IF BY<=1 THEN BY=-1
+240 REM MOVE INVADERS
+250 FOR I=1 TO 8
+260 IF AS(I)=0 THEN GOTO 320
+270 POKE 1024+AY(I)*40+AX(I), 32
+280 AX(I)=AX(I)+AD
+290 IF AX(I)>=38 OR AX(I)<=1 THEN AD=-AD: FOR J=1 TO 8: AY(J)=AY(J)+1: NEXT J: GOTO 320
+300 REM CHECK COLLISION WITH BULLET
+310 IF BX=AX(I) AND (BY=AY(I) OR BY=AY(I)+1) THEN AS(I)=0: BY=-1: SC=SC+100: SOUND 2, 200, 4: POKE 53280,2
+320 NEXT I
+330 REM DRAW INVADERS
+340 FOR I=1 TO 8
+350 IF AS(I)=1 THEN POKE 1024+AY(I)*40+AX(I), 81: POKE 55296+AY(I)*40+AX(I), 7
+360 IF AS(I)=1 AND AY(I)>=22 THEN GOTO 450: REM INVADERS REACHED BOTTOM
+370 NEXT I
+380 REM DRAW BULLET & PLAYER
+390 IF BY>0 AND BX>=0 THEN POKE 1024+BY*40+BX, 124: POKE 55296+BY*40+BX, 1
+400 POKE 1024+22*40+PX, 65: POKE 55296+22*40+PX, 13
+410 REM STATUS BAR
+420 PRINT CHR$(19); "SCORE:"; SC; "  ELETEK:"; LV; "  ";
+430 REM CHECK VICTORY
+440 IF SC>=800 THEN GOTO 480
+450 GOTO 130
+460 REM --- GAME OVER ---
+470 POKE 53280,2: PRINT CHR$(19); CHR$(147); "=== GAME OVER ===": PRINT "VEGSO PONTSZAM: "; SC: END
+480 REM --- VICTORY ---
+490 POKE 53280,5: PRINT CHR$(19); CHR$(147); "=== NYERTEL! GRATULALUNK! ===": PRINT "VEGSO PONTSZAM: "; SC: END
+500 POKE 53280,14: POKE 53281,6: POKE 646,14: PRINT CHR$(147); "READY."`;
+
+// ==========================================
+// 2. BOULDER DASH 64 (CAVE EXPLORATION)
+// ==========================================
+const BOULDER_DASH_BASIC = `10 REM *** BOULDER DASH 64 CAVE EXPLORER ***
+20 POKE 53280,9: POKE 53281,0: POKE 646,7: PRINT CHR$(147)
+30 PRINT "========================================"
+40 PRINT "    *** BOULDER DASH 64 ***"
+50 PRINT "========================================"
+60 PRINT "GYUJTS GYEMANTOT ($), KERULD A KOVEKET (O)!"
+70 PRINT "W,A,S,D = MOZGAS, Q = KILEPES"
+80 FOR W=1 TO 500: NEXT W
+90 PRINT CHR$(147): SC=0: PX=5: PY=5: DM=0
+100 DIM M(20, 38)
+110 FOR Y=1 TO 18: FOR X=1 TO 36
+120 R=INT(RND(1)*10)
+130 IF R=1 THEN M(Y,X)=2: REM DIAMOND ($)
+140 IF R=2 OR R=3 THEN M(Y,X)=1: REM ROCK (O)
+150 IF R>3 THEN M(Y,X)=3: REM DIRT (.)
+160 NEXT X: NEXT Y
+170 REM DRAW CAVE
+180 FOR Y=1 TO 18: FOR X=1 TO 36
+190 C=32: CL=1
+200 IF M(Y,X)=1 THEN C=79: CL=15: REM ROCK
+210 IF M(Y,X)=2 THEN C=36: CL=7: REM DIAMOND
+220 IF M(Y,X)=3 THEN C=46: CL=9: REM DIRT
+230 POKE 1024+Y*40+X, C: POKE 55296+Y*40+X, CL
+240 NEXT X: NEXT Y
+250 REM MAIN LOOP
+260 POKE 1024+PY*40+PX, 64: POKE 55296+PY*40+PX, 1
+270 GET K$: IF K$="" THEN 270
+280 NX=PX: NY=PY
+290 IF K$="W" AND PY>1 THEN NY=PY-1
+300 IF K$="S" AND PY<18 THEN NY=PY+1
+310 IF K$="A" AND PX>1 THEN NX=PX-1
+320 IF K$="D" AND PX<36 THEN NX=PX+1
+330 IF K$="Q" THEN GOTO 450
+340 IF M(NY,NX)=1 THEN SOUND 1, 100, 2: GOTO 260: REM ROCK BLOCKED
+350 IF M(NY,NX)=2 THEN DM=DM+1: SC=SC+50: SOUND 1, 800, 3: POKE 53280,7: FOR W=1 TO 30: NEXT: POKE 53280,9
+360 POKE 1024+PY*40+PX, 32: M(PY,PX)=0
+370 PX=NX: PY=NY: M(PY,PX)=0
+380 POKE 1024+PY*40+PX, 64: POKE 55296+PY*40+PX, 1
+390 PRINT CHR$(19); "GYEMANTOK:"; DM; "  PONTSZAM:"; SC; "   ";
+400 IF DM>=15 THEN GOTO 430
+410 GOTO 260
+420 REM VICTORY
+430 PRINT CHR$(19); CHR$(147); "=== PALYA TELJESITVE! ===": PRINT "GYEMANTOK:"; DM; " PONT:"; SC: END
+440 REM EXIT
+450 POKE 53280,14: POKE 53281,6: POKE 646,14: PRINT CHR$(147); "READY."`;
+
+// ==========================================
+// 3. FLAPPY BIRD 64
+// ==========================================
+const FLAPPY_BIRD_BASIC = `10 REM *** FLAPPY BIRD 64 ***
+20 POKE 53280,3: POKE 53281,6: POKE 646,1: PRINT CHR$(147)
+30 PRINT "========================================"
+40 PRINT "        FLAPPY BIRD 64"
+50 PRINT "========================================"
+60 PRINT "NYOMD MEG A SPACE-T AZ UGRASHOZ!"
+70 GET K$: IF K$="" THEN 70
+80 PRINT CHR$(147): BY=12: BV=0: SC=0: OX=38: GAP=8
+90 REM GAME LOOP
+100 POKE 53280,3
+110 REM ERASE BIRD & OBSTACLE
+120 POKE 1024+INT(BY)*40+6, 32
+130 FOR Y=1 TO 23: POKE 1024+Y*40+OX, 32: NEXT Y
+140 REM READ SPACEBAR
+150 GET K$: IF K$=" " THEN BV=-1.6: SOUND 1, 700, 1
+160 BV=BV+0.4: BY=BY+BV
+170 IF BY<1 THEN BY=1: BV=0
+180 IF BY>23 THEN GOTO 300
+190 REM MOVE OBSTACLE
+200 OX=OX-1
+210 IF OX<=1 THEN OX=38: GAP=INT(RND(1)*12)+4: SC=SC+1: SOUND 1, 950, 1
+220 REM DRAW OBSTACLE
+230 FOR Y=1 TO 23
+240 IF Y<GAP OR Y>GAP+4 THEN POKE 1024+Y*40+OX, 160: POKE 55296+Y*40+OX, 5
+250 NEXT Y
+260 REM CHECK COLLISION
+270 IF OX=6 AND (BY<GAP OR BY>GAP+4) THEN GOTO 300
+280 REM DRAW BIRD
+290 POKE 1024+INT(BY)*40+6, 81: POKE 55296+INT(BY)*40+6, 7
+300 PRINT CHR$(19); "FLAPPY SCORE: "; SC; "   ";
+310 IF BY>23 THEN GOTO 340
+320 FOR W=1 TO 20: NEXT W
+330 GOTO 100
+340 POKE 53280,2: SOUND 1, 120, 6: PRINT CHR$(19); CHR$(147); "=== LEZUHANTAL! GAME OVER ===";
+350 PRINT "VEGSO PONTSZAM: "; SC: END`;
+
+// ==========================================
+// 4. PONG CHAMPION 64
+// ==========================================
+const PONG_BASIC = `10 REM *** PONG CHAMPION 64 ***
+20 POKE 53280,0: POKE 53281,0: POKE 646,1: PRINT CHR$(147)
+30 PRINT "PONG CHAMPION 64"
+40 PRINT "W / S = JATEKOS 1 UTO MOZGAS"
+50 PRINT "NYOMJ EGY GOMBOT AZ INDITASHOZ!"
+60 GET K$: IF K$="" THEN 60
+70 PRINT CHR$(147): P1Y=10: P2Y=10: BX=20: BY=12: DX=1: DY=0.8: S1=0: S2=0
+80 REM MAIN LOOP
+90 POKE 1024+INT(BY)*40+INT(BX), 32
+100 FOR Y=0 TO 3: POKE 1024+(P1Y+Y)*40+2, 32: POKE 1024+(P2Y+Y)*40+37, 32: NEXT Y
+110 GET K$
+120 IF K$="W" AND P1Y>1 THEN P1Y=P1Y-1
+130 IF K$="S" AND P1Y<20 THEN P1Y=P1Y+1
+140 REM AI PLAYER 2
+150 IF P2Y+1<BY AND P2Y<20 THEN P2Y=P2Y+0.6
+160 IF P2Y+1>BY AND P2Y>1 THEN P2Y=P2Y-0.6
+170 BX=BX+DX: BY=BY+DY
+180 IF BY<=1 OR BY>=23 THEN DY=-DY: SOUND 1, 400, 1
+190 REM PADDLE 1 COLLISION
+200 IF BX<=3 AND BY>=P1Y AND BY<=P1Y+3 THEN DX=-DX: BX=4: SOUND 1, 800, 1
+210 REM PADDLE 2 COLLISION
+220 IF BX>=36 AND BY>=P2Y AND BY<=P2Y+3 THEN DX=-DX: BX=35: SOUND 1, 800, 1
+230 REM SCORE
+240 IF BX<=1 THEN S2=S2+1: BX=20: BY=12: DX=1: SOUND 1, 200, 4
+250 IF BX>=39 THEN S1=S1+1: BX=20: BY=12: DX=-1: SOUND 1, 600, 4
+260 REM DRAW PADDLES & BALL
+270 FOR Y=0 TO 3: POKE 1024+(INT(P1Y)+Y)*40+2, 160: POKE 1024+(INT(P2Y)+Y)*40+37, 160: NEXT Y
+280 POKE 1024+INT(BY)*40+INT(BX), 81: POKE 55296+INT(BY)*40+INT(BX), 7
+290 PRINT CHR$(19); "JATEKOS 1: "; S1; "   CPU: "; S2; "   ";
+300 IF S1>=5 OR S2>=5 THEN GOTO 330
+310 FOR W=1 TO 15: NEXT W
+320 GOTO 80
+330 PRINT CHR$(19); CHR$(147); "=== MERKOZES VEGE! ==="; : END`;
+
+// ==========================================
+// 5. MANDELBROT FRACTAL GENERATOR
+// ==========================================
+const MANDELBROT_BASIC = `10 REM *** MANDELBROT FRACTAL DEMO 64 ***
+20 POKE 53280,0: POKE 53281,0: POKE 646,14: PRINT CHR$(147)
+30 PRINT "MANDELBROT FRAKTAL GENERATOR 64"
+40 PRINT "SZAMITAS FOLYAMATBAN (40 X 25 MATRIX)..."
+50 FOR Y=0 TO 24
+60 CI=-1.2 + Y * (2.4 / 24)
+70 FOR X=0 TO 39
+80 CR=-2.0 + X * (2.7 / 39)
+90 ZR=0: ZI=0: IT=0
+100 ZR2=ZR*ZR: ZI2=ZI*ZI
+110 IF (ZR2 + ZI2 > 4) OR (IT >= 15) THEN GOTO 150
+120 ZI=2*ZR*ZI + CI
+130 ZR=ZR2 - ZI2 + CR
+140 IT=IT+1: GOTO 100
+150 REM COLOR CODE & CHARACTER
+160 C=32: IF IT<15 THEN C=65+IT
+170 CL=IT: IF CL>15 THEN CL=1
+180 POKE 1024+Y*40+X, C
+190 POKE 55296+Y*40+X, CL
+200 NEXT X
+210 POKE 53280, INT(RND(1)*16)
+220 NEXT Y
+230 POKE 53280,0: PRINT CHR$(19); "MANDELBROT KESZ! READY."`;
+
+// ==========================================
+// 6. SID 6581 CHIPTUNE PLAYER
+// ==========================================
+const SID_CHIPTUNE_BASIC = `10 REM *** SID 6581 CHIPTUNE ARPEGGIO ***
+20 POKE 53280,6: POKE 53281,0: POKE 646,3: PRINT CHR$(147)
+30 PRINT "========================================"
+40 PRINT "    *** SID 6581 SOUND DEMO ***"
+50 PRINT "========================================"
+60 PRINT "3 HANGCSATORNAS POLIFONIKUS SYNTH..."
+70 DIM N(16)
+80 FOR I=0 TO 15: READ N(I): NEXT I
+90 DATA 261, 329, 392, 523, 392, 329, 261, 196
+100 DATA 293, 349, 440, 587, 440, 349, 293, 220
+110 FOR REP=1 TO 4
+120 FOR S=0 TO 15
+130 F=N(S)
+140 SOUND 1, F, 2
+150 SOUND 2, F*1.5, 1
+160 SOUND 3, F*0.5, 4
+170 POKE 53280, (S+REP) AND 15
+180 PRINT CHR$(19); "HANG: "; F; " HZ  [VOICE 1/2/3 ON] ";
+190 FOR W=1 TO 40: NEXT W
+200 NEXT S
+210 NEXT REP
+220 POKE 53280,14: PRINT CHR$(19); "ZENE LEJATSZASA BEFEJEZODOTT. READY."`;
+
+// ==========================================
+// 7. MATRIX DIGITAL RAIN DEMO
+// ==========================================
+const MATRIX_RAIN_BASIC = `10 REM *** MATRIX DIGITAL RAIN 64 ***
+20 POKE 53280,0: POKE 53281,0: POKE 646,5: PRINT CHR$(147)
+30 DIM D(40), L(40)
+40 FOR X=0 TO 39: D(X)=INT(RND(1)*25): L(X)=INT(RND(1)*10)+5: NEXT X
+50 REM MAIN ANIMATION LOOP
+60 FOR X=0 TO 39
+70 Y=D(X)
+80 IF Y>=0 AND Y<25 THEN POKE 1024+Y*40+X, INT(RND(1)*64)+65: POKE 55296+Y*40+X, 13
+90 TY=Y-1: IF TY>=0 AND TY<25 THEN POKE 55296+TY*40+X, 5
+100 EY=Y-L(X): IF EY>=0 AND EY<25 THEN POKE 1024+EY*40+X, 32
+110 D(X)=D(X)+1
+120 IF D(X)-L(X)>25 THEN D(X)=0: L(X)=INT(RND(1)*10)+5
+130 NEXT X
+140 GET K$: IF K$="" THEN 60
+150 POKE 53280,14: POKE 53281,6: POKE 646,14: PRINT CHR$(147); "READY."`;
+
+// ==========================================
+// 8. DISK DOCTOR 1541 UTILITY
+// ==========================================
+const DISK_DOCTOR_BASIC = `10 REM *** 1541 DISK DOCTOR UTILITY ***
+20 POKE 53280,11: POKE 53281,0: POKE 646,1: PRINT CHR$(147)
+30 PRINT "========================================"
+40 PRINT "    *** 1541 DISK DOCTOR V2.0 ***"
+50 PRINT "========================================"
+60 PRINT "1. BAM & HEADER VIZSGALAT (SAV 18)"
+70 PRINT "2. SZEKTOR TERKEP OLVASASA"
+80 PRINT "3. FLOPPY SEBESSEG TESZT"
+90 PRINT "4. KILEPES"
+100 INPUT "VALASSZ MENUPONTOT (1-4)"; M
+110 IF M=1 THEN GOTO 200
+120 IF M=2 THEN GOTO 300
+130 IF M=3 THEN GOTO 400
+140 IF M=4 THEN PRINT "READY.": END
+150 GOTO 100
+200 PRINT CHR$(147); "--- 1541 BAM ELEMZES ---"
+210 PRINT "SAV 18, SZEKTOR 0: LEMEZ AZONOSITO = '64 2A'"
+220 PRINT "SZABAD BLOKKOK: 664 / 683"
+230 PRINT "STATUSZ: 00, OK,00,00"
+240 GOTO 500
+300 PRINT CHR$(147); "--- SZEKTOR TERKEP ---"
+310 FOR T=1 TO 35: PRINT "SAV "; T; ": ["; : FOR S=1 TO 5: PRINT "#"; : NEXT S: PRINT "] OK": NEXT T
+320 GOTO 500
+400 PRINT CHR$(147); "--- 1541 SEBESSEG & MOTOR TESZT ---"
+410 FOR T=1 TO 35: POKE 53280, T AND 15: PRINT "FEJ LEPES -> SAV "; T: FOR W=1 TO 10: NEXT W: NEXT T
+420 PRINT "MOTOR FORDULATSZAM: 300 RPM (SZABVANYOS)": GOTO 500
+500 PRINT: PRINT "NYOMJ EGY GOMBOT A FOLYTATASHOZ": GET K$: IF K$="" THEN 500
+600 GOTO 20`;
+
+// Helper to create a C64DiskFile from a BASIC program string
+function createBasicDiskFile(
+  id: string,
+  name: string,
+  basicCode: string,
+  blocks: number
+): C64DiskFile {
+  const prgData = generatePrgFromBasic(basicCode);
+  return {
+    id,
+    name: name.toUpperCase().slice(0, 16),
+    type: 'PRG',
+    sizeBlocks: blocks || Math.ceil(prgData.length / 254),
+    data: prgData,
+    loadAddress: 0x0801,
+    basicCode,
+  };
+}
+
+/**
+ * Curated Pre-built Commodore 1541 Floppy Disks
+ */
+export const CURATED_C64_DISKS: C64DiskImage[] = [
+  {
+    id: 'disk-arcade',
+    title: 'ARCADE CLASSICS',
+    diskId: '64',
+    dosType: '2A',
+    category: 'games',
+    description: '4 iconic retro arcade games: Space Invaders, Boulder Dash, Flappy Bird, and Pong.',
+    descriptionHu: '4 klasszikus retro C64 arcade játék: Space Invaders, Boulder Dash, Flappy Bird és Pong.',
+    files: [
+      createBasicDiskFile('invaders', 'SPACE INVADERS', SPACE_INVADERS_BASIC, 32),
+      createBasicDiskFile('bdash', 'BOULDER DASH', BOULDER_DASH_BASIC, 28),
+      createBasicDiskFile('flappy', 'FLAPPY BIRD 64', FLAPPY_BIRD_BASIC, 22),
+      createBasicDiskFile('pong', 'PONG CHAMPION', PONG_BASIC, 18),
+    ],
+    freeBlocks: 564,
+    isWriteProtected: false,
+  },
+  {
+    id: 'disk-demos',
+    title: 'DEMOSCENE & SID',
+    diskId: '86',
+    dosType: '2A',
+    category: 'demos',
+    description: 'Demoscene graphics, Mandelbrot fractals, SID 6581 synthesizer music and Matrix rain.',
+    descriptionHu: 'Demoscene effektek, Mandelbrot fraktál, SID 6581 szintetizátor zene és Mátrix eső.',
+    files: [
+      createBasicDiskFile('mandelbrot', 'MANDELBROT 64', MANDELBROT_BASIC, 19),
+      createBasicDiskFile('chiptune', 'SID CHIPTUNE', SID_CHIPTUNE_BASIC, 24),
+      createBasicDiskFile('matrix', 'MATRIX RAIN', MATRIX_RAIN_BASIC, 16),
+    ],
+    freeBlocks: 605,
+    isWriteProtected: false,
+  },
+  {
+    id: 'disk-utils',
+    title: '1541 UTILITIES',
+    diskId: '01',
+    dosType: '2A',
+    category: 'utilities',
+    description: 'System diagnostic utilities, Disk Doctor 1541, and low-level tools.',
+    descriptionHu: 'Rendszerdiagnosztika, 1541 Disk Doctor és alacsony szintű segédprogramok.',
+    files: [
+      createBasicDiskFile('diskdoc', 'DISK DOCTOR 1541', DISK_DOCTOR_BASIC, 26),
+    ],
+    freeBlocks: 638,
+    isWriteProtected: false,
+  },
+];
