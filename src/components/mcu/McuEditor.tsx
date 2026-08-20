@@ -79,7 +79,7 @@ export const McuEditor: React.FC<McuEditorProps> = ({
             </button>
 
             {showSamples && (
-              <div className="absolute right-0 top-full mt-1.5 w-80 bg-[#0F172A] border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 flex flex-col gap-1 max-h-96 overflow-y-auto">
+              <div className="absolute right-0 sm:right-0 max-w-[calc(100vw-2rem)] top-full mt-1.5 w-80 bg-[#0F172A] border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 flex flex-col gap-1 max-h-96 overflow-y-auto">
                 <div className="text-[10px] font-mono uppercase text-slate-400 font-bold px-2 py-1 flex items-center justify-between">
                   <span>{language === 'hu' ? 'MCU Mintaprogramok' : 'MCU Sample Programs'}</span>
                 </div>

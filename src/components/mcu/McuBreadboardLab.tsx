@@ -122,7 +122,7 @@ export const McuBreadboardLab: React.FC<McuBreadboardLabProps> = ({
   return (
     <div className="bg-[#0B0F17] rounded-2xl border border-slate-800 p-4 flex flex-col gap-4 shadow-xl select-none">
       {/* Breadboard Header with Hardware Module Manager Button */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+      <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
         <div className="flex items-center gap-2">
           <div className="p-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
             <Radio className="w-4 h-4" />
