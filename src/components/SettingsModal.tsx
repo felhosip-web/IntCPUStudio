@@ -86,7 +86,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
         className="relative w-full max-w-3xl bg-[#0F172A] border border-slate-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800/80 bg-[#0A0B0E]/60">
+        <div className="flex flex-wrap md:flex-nowrap items-center justify-between px-6 py-4 border-b border-slate-800/80 bg-[#0A0B0E]/60">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-400">
               <Sliders className="w-5 h-5" />
@@ -179,7 +179,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="space-y-5">
               {/* Appearance Theme & Color Mode */}
               <div className="p-4 bg-[#0A0B0E]/60 rounded-xl border border-slate-800/80 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3">
                   <label className="block text-xs font-mono font-bold text-slate-300 uppercase tracking-wider">
                     {t('settingThemeMode')}
                   </label>
@@ -305,7 +305,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <button
                     onClick={() => setLanguage('hu')}
-                    className={`flex items-center justify-between p-3 rounded-xl border font-mono text-xs transition-all ${
+                    className={`flex flex-wrap md:flex-nowrap items-center justify-between gap-3 p-3 rounded-xl border font-mono text-xs transition-all ${
                       language === 'hu'
                         ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-300 shadow-md shadow-cyan-500/10'
                         : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
@@ -323,7 +323,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
                   <button
                     onClick={() => setLanguage('en')}
-                    className={`flex items-center justify-between p-3 rounded-xl border font-mono text-xs transition-all ${
+                    className={`flex flex-wrap md:flex-nowrap items-center justify-between gap-3 p-3 rounded-xl border font-mono text-xs transition-all ${
                       language === 'en'
                         ? 'bg-cyan-500/10 border-cyan-500/50 text-cyan-300 shadow-md shadow-cyan-500/10'
                         : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
@@ -437,7 +437,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="space-y-5">
               {/* Clock Speed Slider */}
               <div className="p-4 bg-[#0A0B0E]/60 rounded-xl border border-slate-800/80 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3">
                   <label className="text-xs font-mono font-bold text-slate-300">
                     {t('settingClockSpeed')}
                   </label>
@@ -454,7 +454,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                   onChange={(e) => updateSettings({ clockSpeedHz: parseFloat(e.target.value) })}
                   className="w-full accent-cyan-400 cursor-pointer"
                 />
-                <div className="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3 text-[10px] font-mono text-slate-500">
                   <span>0.5 Hz (Lassú / Tanulás)</span>
                   <span>10 Hz</span>
                   <span>100 Hz (Turbo)</span>
@@ -463,7 +463,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
               {/* Microstep Delay */}
               <div className="p-4 bg-[#0A0B0E]/60 rounded-xl border border-slate-800/80 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3">
                   <label className="text-xs font-mono font-bold text-slate-300">
                     {t('settingMicroDelay')}
                   </label>
@@ -484,7 +484,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 
               {/* History Buffer Limit */}
               <div className="p-4 bg-[#0A0B0E]/60 rounded-xl border border-slate-800/80 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3">
                   <label className="text-xs font-mono font-bold text-slate-300">
                     {t('settingHistoryLimit')}
                   </label>
@@ -603,7 +603,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             <div className="space-y-5">
               {/* Master Volume */}
               <div className="p-4 bg-[#0A0B0E]/60 rounded-xl border border-slate-800/80 space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-3">
                   <label className="text-xs font-mono font-bold text-slate-300">
                     {t('settingMasterVolume')}
                   </label>

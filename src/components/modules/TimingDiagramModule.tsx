@@ -473,7 +473,7 @@ export const TimingDiagramModule: React.FC<TimingDiagramModuleProps> = ({
             </button>
 
             {isPresetModalOpen && (
-              <div className="absolute right-0 mt-1 w-80 bg-[#0E1424] border border-slate-700 rounded-xl p-2 shadow-2xl z-50 flex flex-col gap-1.5">
+              <div className="absolute right-0 sm:right-0 max-w-[calc(100vw-2rem)] mt-1 w-80 bg-[#0E1424] border border-slate-700 rounded-xl p-2 shadow-2xl z-50 flex flex-col gap-1.5">
                 <div className="text-[11px] font-mono font-bold text-slate-400 px-2 py-1 border-b border-slate-800">
                   {language === 'hu' ? 'Válassz egy szabványos adatlapos mintát:' : 'Select a standard datasheet timing:'}
                 </div>
