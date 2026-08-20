@@ -410,7 +410,7 @@ export const C64StudioView: React.FC = () => {
         </div>
 
         {/* Tab Switcher on larger screens */}
-        <div className="flex flex-wrap items-center gap-1.5 bg-[#0C101A] p-1.5 rounded-2xl border border-slate-800">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 bg-[#0C101A] p-1.5 rounded-2xl border border-slate-800">
           <button
             onClick={() => setActiveTab('turbo')}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${

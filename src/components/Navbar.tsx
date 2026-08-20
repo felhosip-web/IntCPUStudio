@@ -176,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             {showCoreDropdown && (
-              <div className="absolute top-full mt-1.5 left-0 bg-[#0F172A] border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 w-72 flex flex-col gap-1">
+              <div className="absolute top-full mt-1.5 right-0 sm:right-auto sm:left-0 max-w-[calc(100vw-2rem)] bg-[#0F172A] border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 w-72 flex flex-col gap-1">
                 <div className="text-[10px] font-mono uppercase text-slate-400 font-bold px-2 py-1 flex items-center justify-between">
                   <span>{language === 'hu' ? 'CPU Processzormagok' : 'CPU Cores'}</span>
                 </div>
@@ -318,7 +318,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             {showSpeedDropdown && (
-              <div className="absolute top-full mt-1 right-0 bg-[#0F172A] border border-slate-800 rounded-xl p-1.5 shadow-2xl flex flex-col gap-0.5 z-50 min-w-32">
+              <div className="absolute top-full mt-1 right-0 max-w-[calc(100vw-2rem)] bg-[#0F172A] border border-slate-800 rounded-xl p-1.5 shadow-2xl flex flex-col gap-0.5 z-50 min-w-32">
                 {SPEED_PRESETS.map((p) => (
                   <button
                     key={p.label}
@@ -370,7 +370,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {showProgramsDropdown && (
-            <div className="absolute top-full mt-2 right-0 bg-[#0F172A] border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 w-80 flex flex-col gap-1 max-h-96 overflow-y-auto">
+            <div className="absolute top-full mt-2 right-0 max-w-[calc(100vw-2rem)] bg-[#0F172A] border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 w-80 flex flex-col gap-1 max-h-96 overflow-y-auto">
               <div className="text-[10px] font-mono uppercase text-slate-400 font-bold px-2 py-1">
                 {t('builtInPrograms')}
               </div>
@@ -460,7 +460,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
 
           {showThemeDropdown && (
-            <div className="absolute top-full mt-2 right-0 bg-[#0F172A] border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 w-64 flex flex-col gap-1">
+            <div className="absolute top-full mt-2 right-0 max-w-[calc(100vw-2rem)] bg-[#0F172A] border border-slate-800 rounded-2xl p-2 shadow-2xl z-50 w-64 flex flex-col gap-1">
               <div className="text-[10px] font-mono uppercase text-slate-400 font-bold px-2 py-1 flex items-center justify-between border-b border-slate-800 pb-1.5 mb-0.5">
                 <span>{t('settingThemeMode')}</span>
               </div>
